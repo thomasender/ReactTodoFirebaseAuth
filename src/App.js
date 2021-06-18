@@ -6,16 +6,17 @@ import Login from "./Login";
 import SignUp from "./SignUp";
 import { AuthProvider } from "./Auth";
 import PrivateRoute from "./PrivateRoute";
+import { Container } from "semantic-ui-react";
 
 const App = () => {
   return (
     <AuthProvider>
       <Router>
-        <div>
+        <Container align="center">
           <PrivateRoute exact path="/" component={Home} />
           <Route exact path="/login" component={Login} />
           <Route exact path="/signup" component={SignUp} />
-        </div>
+        </Container>
       </Router>
     </AuthProvider>
   );
