@@ -29,14 +29,7 @@ const Home = () => {
         )}
         <Button onClick={() => app.auth().signOut()}>Sign out</Button>
       </Segment>
-      {isView ? (
-        <TaskComponent
-          title="First Task"
-          description="This is the first Task"
-        />
-      ) : (
-        <FormComponent />
-      )}
+      {isView ? <TaskComponent /> : <FormComponent />}
     </>
   );
 };

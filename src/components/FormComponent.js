@@ -20,6 +20,7 @@ const FormExampleFieldControl = () => {
   const [team, setTeam] = useState("");
   const [urgency, setUrgency] = useState("");
   const [description, setDescription] = useState("");
+  const [didWrite, setDidWrite] = useState(true);
 
   const handleTaskName = async (e, data) => {
     setTaskName(data.value);
@@ -48,8 +49,17 @@ const FormExampleFieldControl = () => {
       description: description,
       complete: false,
     };
-
-    taskRef.push(newTask);
+    setDidWrite(false);
+    taskRef.push(newTask, (error) => {
+      if (error) {
+        setDidWrite(true);
+        alert(error.message);
+        console.error(error);
+      } else {
+        setDidWrite(true);
+        console.log("Task stored successfully");
+      }
+    });
   };
 
   return (
@@ -99,7 +109,13 @@ const FormExampleFieldControl = () => {
         placeholder="Describe the task..."
         onChange={handleDescription}
       />
-      <Form.Field control={Button}>Add Task</Form.Field>
+      {didWrite ? (
+        <Form.Field control={Button}>Add Task</Form.Field>
+      ) : (
+        <Form.Field control={Button} disabled loading>
+          Add Task
+        </Form.Field>
+      )}
     </Form>
   );
 };
