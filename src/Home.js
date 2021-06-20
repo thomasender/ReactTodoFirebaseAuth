@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import app from "./base";
-import { Button, Header, Segment } from "semantic-ui-react";
+import { Button, Header, Segment, Icon } from "semantic-ui-react";
 import FormComponent from "./components/FormComponent";
 import TaskComponent from "./components/TaskComponent";
 
@@ -9,7 +9,10 @@ const Home = () => {
   return (
     <>
       <Segment>
-        <Header className="huge">Add Task</Header>
+        <Header className="huge">
+          <Icon name="tasks" /> To-Do-List
+        </Header>
+        <Header sub>Manage tasks for your team</Header>
         {isView ? (
           <Button
             onClick={() => {

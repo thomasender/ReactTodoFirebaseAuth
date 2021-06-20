@@ -7,12 +7,14 @@ import {
   Radio,
   Select,
   TextArea,
+  Message,
+  Label,
 } from "semantic-ui-react";
 
 const options = [
-  { key: "b", text: "Backend", value: "backend" },
-  { key: "f", text: "Frontend", value: "frontend" },
-  { key: "d", text: "Design", value: "design" },
+  { key: "b", text: "Backend", value: "Backend" },
+  { key: "f", text: "Frontend", value: "Frontend" },
+  { key: "d", text: "Design", value: "Design" },
 ];
 
 const FormExampleFieldControl = () => {
@@ -21,10 +23,11 @@ const FormExampleFieldControl = () => {
   const [urgency, setUrgency] = useState("");
   const [description, setDescription] = useState("");
   const [didWrite, setDidWrite] = useState(true);
+  const [success, setSuccess] = useState(false);
+  const [failure, setFailure] = useState(false);
 
   const handleTaskName = async (e, data) => {
     setTaskName(data.value);
-    console.log(taskName);
   };
 
   const handleTeam = async (e, data) => {
@@ -33,7 +36,6 @@ const FormExampleFieldControl = () => {
 
   const handleUrgency = (e, data) => {
     setUrgency(data.value);
-    console.log(urgency);
   };
 
   const handleDescription = (e, data) => {
@@ -41,25 +43,46 @@ const FormExampleFieldControl = () => {
   };
 
   const createTask = () => {
-    const taskRef = firebase.database().ref("Task");
+    const randomID = new Date().getTime().toString(36);
+    const taskRef = firebase.database().ref(randomID);
+
     const newTask = {
+      id: randomID,
       taskName: taskName,
       team: team,
       urgency: urgency,
       description: description,
+      created: Date().valueOf(),
       complete: false,
     };
     setDidWrite(false);
-    taskRef.push(newTask, (error) => {
-      if (error) {
-        setDidWrite(true);
-        alert(error.message);
-        console.error(error);
-      } else {
-        setDidWrite(true);
-        console.log("Task stored successfully");
-      }
-    });
+    try {
+      taskRef.set(newTask, (error) => {
+        if (error) {
+          setFailure(true);
+          setSuccess(false);
+          setDidWrite(true);
+          console.error(error);
+        } else {
+          setSuccess(true);
+          setFailure(false);
+          setDidWrite(true);
+          setTaskName("");
+          setTeam("");
+          setUrgency();
+          setDescription("");
+        }
+      });
+    } catch (error) {
+      setFailure(true);
+      setSuccess(false);
+      setDidWrite(true);
+      alert(error.message);
+      console.error(error);
+    }
+
+    const key = taskRef.key;
+    console.log("KEY", key);
   };
 
   return (
@@ -67,9 +90,10 @@ const FormExampleFieldControl = () => {
       <Form.Group widths="equal">
         <Form.Field
           control={Input}
-          label="Task"
+          label="Task Name"
           placeholder="Task Name"
           onChange={handleTaskName}
+          value={taskName}
         />
         <Form.Field
           control={Select}
@@ -77,37 +101,47 @@ const FormExampleFieldControl = () => {
           options={options}
           onChange={handleTeam}
           placeholder="Team"
+          value={team}
         />
       </Form.Group>
       <Form.Group inline>
-        <label>Urgency</label>
-        <Form.Field
-          control={Radio}
-          label="High"
-          value="1"
-          //checked={value === "1"}
-          onChange={handleUrgency}
-        />
-        <Form.Field
-          control={Radio}
-          label="Middle"
-          value="2"
-          //checked={value === "2"}
-          onChange={handleUrgency}
-        />
-        <Form.Field
-          control={Radio}
-          label="Low"
-          value="3"
-          //checked={value === "3"}
-          onChange={handleUrgency}
-        />
+        <Label circular color="violet">
+          Urgency
+        </Label>
+        <Form.Field>
+          <Radio
+            label="High"
+            name="radioGroup"
+            value="High"
+            checked={urgency === "High"}
+            onChange={handleUrgency}
+          />
+        </Form.Field>
+        <Form.Field>
+          <Radio
+            label="Middle"
+            name="radioGroup"
+            value="Middle"
+            checked={urgency === "Middle"}
+            onChange={handleUrgency}
+          />
+        </Form.Field>
+        <Form.Field>
+          <Radio
+            label="Low"
+            name="radioGroup"
+            value="Low"
+            checked={urgency === "Low"}
+            onChange={handleUrgency}
+          />
+        </Form.Field>
       </Form.Group>
       <Form.Field
         control={TextArea}
         label="Description"
         placeholder="Describe the task..."
         onChange={handleDescription}
+        value={description}
       />
       {didWrite ? (
         <Form.Field control={Button}>Add Task</Form.Field>
@@ -115,6 +149,18 @@ const FormExampleFieldControl = () => {
         <Form.Field control={Button} disabled loading>
           Add Task
         </Form.Field>
+      )}
+      {success === true ? (
+        <Message positive>
+          <Message.Header>Task created successfully!</Message.Header>
+        </Message>
+      ) : (
+        ""
+      )}
+      {failure && (
+        <Message>
+          <Message.Header>Could not create task!</Message.Header>
+        </Message>
       )}
     </Form>
   );

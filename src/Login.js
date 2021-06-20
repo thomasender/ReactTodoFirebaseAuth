@@ -8,7 +8,7 @@ import {
   Form,
   Grid,
   Header,
-  Image,
+  Icon,
   Message,
   Segment,
 } from "semantic-ui-react";
@@ -39,8 +39,12 @@ const Login = ({ history }) => {
   return (
     <Grid textAlign="center" style={{ height: "100vh" }} verticalAlign="middle">
       <Grid.Column style={{ maxWidth: 450 }}>
+        <Header size="large">
+          <Icon name="tasks" size="mini" />
+          To-Do-List
+        </Header>
+        <Header sub>Manage tasks for your team</Header>
         <Header className="huge">Log In</Header>
-        <Image src="/logo.png" /> Log-in to your account
         <Form size="large" onSubmit={handleLogin}>
           <Segment stacked>
             <label>
@@ -52,11 +56,13 @@ const Login = ({ history }) => {
               <input name="password" type="password" placeholder="Password" />
             </label>
             <Button type="submit">Log in</Button>
-            <p>
-              Don't have an account? <Link to="/signup">Sign Up!</Link>
-            </p>
           </Segment>
         </Form>
+        <Message positive attached="bottom">
+          New? Create your account here
+          <Icon name="angle double right" />
+          <Link to="/login">Sign Up</Link>
+        </Message>
       </Grid.Column>
     </Grid>
   );
